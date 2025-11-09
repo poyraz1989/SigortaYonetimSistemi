@@ -1,0 +1,65 @@
+{% extends "agent/base_agent.html" %}
+
+{% block title %}Müşterilerim{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Müşterilerim ({{ customers|length }} Adet)</h2>
+    
+    <p class="text-end">
+		<a href="{% url 'agent_export_customers' %}" class="btn btn-primary me-2">📊 CSV İndir</a>
+        <a href="{% url 'agent_customer_add' %}" class="btn btn-success">➕ Yeni Müşteri Ekle</a>	
+    </p>
+
+    {% if customers %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+						<th>Adı Soyadı</th>
+						<th>TCKN</th>
+						<th>Doğum Tarihi</th> 
+						<th>Telefon</th>
+						<th>Adres</th>
+						<th>İşlemler</th>
+					</tr>
+                </thead>
+                <tbody>
+    {% for customer in object_list %}
+    <tr>
+        <td><a href="#">{{ customer.name }}</a></td> 
+        
+        <td>
+            {% if customer.tckn %}{{ customer.tckn }}{% else %}-{% endif %}
+        </td>
+        
+        <td>
+            {% if customer.date_of_birth %}
+                {{ customer.date_of_birth|date:"d M Y" }}
+            {% else %}
+                -
+            {% endif %}
+        </td>
+
+        <td>
+            {% if customer.phone %}{{ customer.phone }}{% else %}-{% endif %}
+        </td>
+
+        <td>
+            {% if customer.address_city %}{{ customer.address_city }}{% else %}-{% endif %}
+        </td>
+        
+        <td>
+            <a href="{% url 'edit_customer' customer.pk %}" class="btn btn-sm btn-primary">Düzenle</a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Henüz size ait kayıtlı bir müşteriniz bulunmamaktadır.
+            <a href="{% url 'agent_customer_add' %}" class="alert-link">Hemen Yeni Bir Müşteri Ekleyin.</a>
+        </div>
+    {% endif %}
+{% endblock %}

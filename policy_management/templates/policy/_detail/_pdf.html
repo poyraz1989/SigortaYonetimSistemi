@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Poliçe Dökümanı - {{ policy.policy_number }}</title>
+    <style>
+        body { font-family: sans-serif; font-size: 10pt; margin: 2cm; }
+        h1, h2 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .data-table th, .data-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .data-table th { background-color: #f2f2f2; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 8pt; color: #777; }
+    </style>
+</head>
+<body>
+
+    <h1>Sigorta Poliçesi Dökümanı</h1>
+
+    <h2>Poliçe Bilgileri</h2>
+    <table class="data-table">
+        <tr><th>Poliçe Numarası</th><td>{{ policy.policy_number }}</td></tr>
+        <tr><th>Poliçe Tipi</th><td>{{ policy.policy_type }}</td></tr>
+        <tr><th>Başlangıç Tarihi</th><td>{{ policy.start_date|date:"d E Y" }}</td></tr>
+        <tr><th>Bitiş Tarihi</th><td>{{ policy.end_date|date:"d E Y" }}</td></tr>
+        <tr><th>Prim Tutarı</th><td>{{ policy.premium_amount|floatformat:2 }} ₺</td></tr>
+        <tr><th>Düzenleyen Acente</th><td>{{ policy.issued_by_agent.get_full_name|default:policy.issued_by_agent.username }}</td></tr>
+    </table>
+
+    <h2>Müşteri Bilgileri</h2>
+    <table class="data-table">
+        <tr><th>Adı / Ünvanı</th><td>{{ policy.customer.name }}</td></tr>
+        <tr><th>TCKN / VKN</th><td>{{ policy.customer.tckn_vkn }}</td></tr>
+        <tr><th>E-posta</th><td>{{ policy.customer.email }}</td></tr>
+        <tr><th>Adres</th><td>{{ policy.customer.address }}</td></tr>
+    </table>
+    
+    <div class="footer">
+        Bu döküman Sigorta Yönetim Sistemi tarafından otomatik olarak oluşturulmuştur.
+    </div>
+</body>
+</html>

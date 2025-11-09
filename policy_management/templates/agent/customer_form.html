@@ -1,0 +1,15 @@
+{% extends "agent/base_agent.html" %}
+
+{% block title %}Müşteri Ekle/Düzenle{% endblock %}
+
+{% block content %}
+    <h2>{% if form.instance.pk %}Müşteri Düzenle{% else %}Yeni Müşteri Ekle{% endif %}</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }} {# Form alanlarını paragraf olarak gösterir #}
+        
+        <button type="submit">Kaydet</button>
+    </form>
+    <p><a href="{% url 'agent_customer_list' %}">Müşteri Listesine Geri Dön</a></p>
+{% endblock %}

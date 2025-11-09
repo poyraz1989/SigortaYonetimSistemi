@@ -1,0 +1,111 @@
+{% extends "agent/base_agent.html" %}
+
+{% block title %}Fiyat Teklifleri ve Karşılaştırma{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Fiyat Teklifi Al</h2>
+    
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            Yeni Teklif Sorgulama
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                
+                <div class="col-md-5">
+                    <label for="{{ form.customer.id_for_label }}" class="form-label">{{ form.customer.label }}</label>
+                    {{ form.customer }}
+                    {% if form.customer.errors %}<div class="text-danger small">{{ form.customer.errors }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-5">
+                    <label for="{{ form.policy_type.id_for_label }}" class="form-label">{{ form.policy_type.label }}</label>
+                    {{ form.policy_type }}
+                    {% if form.policy_type.errors %}<div class="text-danger small">{{ form.policy_type.errors }}</div>{% endif %}
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100">Fiyat Çek</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h3 class="mb-3 mt-5">Son Alınan Teklifler</h3>
+    
+	<div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <form method="GET" action="{% url 'agent_quote_list' %}" class="row g-3">
+                <div class="col-md-5">
+                    <label for="filter_customer" class="form-label">Müşteriye Göre Filtrele</label>
+                    <select name="customer" id="filter_customer" class="form-select form-select-sm">
+                        <option value="">Tüm Müşteriler</option>
+                        {% for c in request.user.customers.all %}
+                            <option value="{{ c.pk }}" {% if request.GET.customer == c.pk|stringformat:"s" %}selected{% endif %}>
+                                {{ c.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="filter_policy_type" class="form-label">Poliçe Tipine Göre Filtrele</label>
+                    <select name="policy_type" id="filter_policy_type" class="form-select form-select-sm">
+                        <option value="">Tüm Tipler</option>
+                        {% for type_key, type_name in form.fields.policy_type.choices %}
+                            <option value="{{ type_key }}" {% if request.GET.policy_type == type_key %}selected{% endif %}>
+                                {{ type_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary w-100">Filtrele</button>
+                </div>
+            </form>
+        </div>
+    </div>
+	
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Şirket</th>
+                    <th>Sigorta Tipi</th>
+                    <th>Prim Tutarı (TL)</th>
+                    <th>Durum</th>
+                    <th>Tarih</th>
+                    <th>Müşteri</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quote in quotes %}
+                <tr>
+                    <td>{{ quote.company_name }}</td>
+                    <td>{{ quote.get_policy_type_display }}</td>
+                    
+                    {% if quote.premium_amount %}
+                        <td class="{% if forloop.first %}fw-bold text-success{% endif %}">
+                            {{ quote.premium_amount|floatformat:2 }} TL
+                        </td>
+                        <td><span class="badge bg-success">Başarılı</span></td>
+                    {% else %}
+                        <td class="text-danger">-</td>
+                        <td><span class="badge bg-danger" title="{{ quote.error_message }}">{{ quote.error_message|truncatechars:30 }}</span></td>
+                    {% endif %}
+                    
+                    <td>{{ quote.created_at|date:"d M H:i" }}</td>
+                    <td>
+                        {% if quote.customer %}
+                            {{ quote.customer.name }}
+                        {% else %}
+                            (Müşteri Silinmiş)
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
