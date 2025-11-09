@@ -24,9 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-w-hv8kmxjsohe(rkp0v3(xb5hz53)^m4qmelek(wjpqg)d9tk6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'www.pythonanywhere.com',  # PA sunucusu için gerekli
+    'poyrazzz.pythonanywhere.com', # Kendi alan adınız
+    # Eğer alan adınız varsa, onu da buraya ekleyin: 'sigortasistemi.com'
+]
 
 
 # Application definition
@@ -118,7 +122,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # <-- YENİ EKLEME
+
 STATICFILES_DIRS = [
     # Projenin root seviyesinde ekleyebileceğiniz statik dosyaları işaret eder
     # os.path.join(BASE_DIR, 'static'), 
