@@ -30,6 +30,10 @@ ALLOWED_HOSTS = [
     'www.pythonanywhere.com',  # PA sunucusu için gerekli
     'poyrazzz.pythonanywhere.com', # Kendi alan adınız
     # Eğer alan adınız varsa, onu da buraya ekleyin: 'sigortasistemi.com'
+
+    # 🚨 YENİ EKLEME (Lokalde çalışmak için kritik):
+    '127.0.0.1', 
+    'localhost',
 ]
 
 
