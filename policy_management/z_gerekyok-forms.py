@@ -75,29 +75,30 @@ class PolicyForm(forms.ModelForm):
 class QuoteRequestForm(forms.Form):
     """API'lerden fiyat almak için kullanılan basit form."""
     
-    # KRİTİK DEĞİŞİKLİK: __init__ metodunu ekliyoruz
-    def __init__(self, *args, **kwargs):
-        # Eğer kwargs'da 'user' varsa al ve sil, aksi takdirde None ata
-        user = kwargs.pop('user', None) 
-        
-        # Django'nun BaseForm başlatıcısını çağır
-        super().__init__(*args, **kwargs)
-        
-        # Eğer kullanıcı bir acenteyse, sadece kendi müşterilerini göstersin.
-        if user and user.is_authenticated and user.role == 'agent':
-            self.fields['customer'].queryset = Customer.objects.filter(agent=user)
-        # Yönetici ise, tüm müşterileri görebilir (varsayılan)
-
-    # Alanlar (varsayılan queryset tüm müşterilerdir, __init__ ile filtrelenir)
+    # 🚨 KRİTİK DÜZELTME: Form alanları init metodundan ÖNCE gelmelidir. 🚨
+    
+    # 1. Müşteri Seçimi Alanı
     customer = forms.ModelChoiceField(
-        queryset=Customer.objects.all(), # Varsayılan olarak tüm müşteriler
+        # Başlangıçta boş queryset tanımla, init'te acenteye göre doldurulacak
+        queryset=Customer.objects.none(), 
         label="Müşteri Seçin",
-        widget=forms.Select(attrs={'class': 'form-select'})
+        widget=forms.Select(attrs={'class': 'form-control'})
     )
     
-    # Kullanılacak sigorta türü
+    # 2. Sigorta Tipi Alanı
     policy_type = forms.ChoiceField(
         choices=Quote.QUOTE_TYPES,
         label="Sigorta Tipi",
         widget=forms.Select(attrs={'class': 'form-select'})
     )
+    
+    # __init__ metodu artık alanlardan sonra geliyor
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # 🚨 KRİTİK KONTROL: user nesnesinin kullanılması 🚨
+        if user and user.is_authenticated:
+            # Yalnızca bu acenteye ait müşterileri göster
+            self.fields['customer'].queryset = Customer.objects.filter(agent=user)
+        else:
+            self.fields['customer'].queryset = Customer.objects.none()

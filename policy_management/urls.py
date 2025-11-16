@@ -14,7 +14,7 @@ urlpatterns = [
     
     # MÜŞTERİ YÖNETİMİ (Burada CBV'ler durabilir, çünkü onları FBV'ye çevirmedik)
     path('agent/customer/add/', views.CustomerCreateView.as_view(), name='agent_customer_add'),
-    path('agent/customer/edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='agent_customer_edit'), # Eksik olan düzenleme URL'si
+    #path('agent/customer/edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='agent_customer_edit'), # Eksik olan düzenleme URL'si
     
     # POLİÇE YÖNETİMİ (FBV ile Dosya Yükleme Sorunu Giderildi)
     path('agent/policy/create/', views.agent_policy_create, name='agent_policy_add'),
@@ -24,7 +24,7 @@ urlpatterns = [
     path('agent/export/customers/csv/', views.export_customer_data, name='agent_export_customers'),
     path('agent/export/policies/csv/', views.export_policy_data, name='agent_export_policies'),
     path('agent/policy/document/delete/<int:pk>/', views.agent_policy_document_delete, name='agent_policy_document_delete'),
-    path('agent/pricing/', views.agent_pricing_view, name='agent_pricing_engine'),
+    #path('agent/pricing/', views.agent_pricing_view, name='agent_pricing_engine'),
 
     # FİYAT KARŞILAŞTIRMA MODÜLÜ
     path('agent/quotes/', views.QuoteListView.as_view(), name='agent_quote_list'), # Teklif listesi ve Fiyat alma formu
@@ -36,15 +36,14 @@ urlpatterns = [
     # YENİ YOLLAR: MÜŞTERİ DÜZENLEME
     # <int:pk> kısmı, hangi müşterinin düzenleneceğini URL'den yakalar.
     path('customers/edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='edit_customer'),
-
-
-    # ... (Müşteri Yönetimi Yolları) ...
-    path('customers/', views.AgentCustomerListView.as_view(), name='agent_customer_list'),
-    path('customers/add/', views.CustomerCreateView.as_view(), name='agent_customer_add'),
-    path('customers/edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='edit_customer'), 
+ 
     
     # ... (Teklif Yönetimi Yolları) ...
     path('quotes/', views.QuoteListView.as_view(), name='agent_quote_list'),
+    
+    # 🚨 YENİ EKLEME: Teklif Detay Sayfası
+    # Teklifin ID'si (pk) ile sayfaya erişilecek
+    path('quotes/<int:pk>/', views.QuoteDetailView.as_view(), name='agent_quote_detail'),
     
     # 🚨 YENİ POLİÇE YÖNETİM YOLLARI:
     path('policies/', views.AgentPolicyListView.as_view(), name='agent_policy_list'),

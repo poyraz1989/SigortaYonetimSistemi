@@ -28,11 +28,15 @@
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="submit" class="btn btn-success w-100">Fiyat Çek</button>
                 </div>
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
             </form>
         </div>
     </div>
 
-    <h3 class="mb-3 mt-5">Son Alınan Teklifler</h3>
+    <h3 class="mb-3 mt-5">Son Alınan Teklifler ({{ quotes|length }} adet)</h3>
     
 	<div class="card shadow-sm mb-3">
         <div class="card-body">
@@ -41,7 +45,7 @@
                     <label for="filter_customer" class="form-label">Müşteriye Göre Filtrele</label>
                     <select name="customer" id="filter_customer" class="form-select form-select-sm">
                         <option value="">Tüm Müşteriler</option>
-                        {% for c in request.user.customers.all %}
+                        {% for c in request.user.customer_set.all %} 
                             <option value="{{ c.pk }}" {% if request.GET.customer == c.pk|stringformat:"s" %}selected{% endif %}>
                                 {{ c.name }}
                             </option>
@@ -66,6 +70,7 @@
         </div>
     </div>
 	
+    {% if quotes %}
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
@@ -85,14 +90,20 @@
                     <td>{{ quote.get_policy_type_display }}</td>
                     
                     {% if quote.premium_amount %}
-                        <td class="{% if forloop.first %}fw-bold text-success{% endif %}">
-                            {{ quote.premium_amount|floatformat:2 }} TL
-                        </td>
-                        <td><span class="badge bg-success">Başarılı</span></td>
-                    {% else %}
-                        <td class="text-danger">-</td>
-                        <td><span class="badge bg-danger" title="{{ quote.error_message }}">{{ quote.error_message|truncatechars:30 }}</span></td>
-                    {% endif %}
+						<td class="{% if forloop.first %}fw-bold text-success{% endif %}">
+							<a href="{% url 'agent_quote_detail' pk=quote.pk %}">
+								{{ quote.premium_amount|floatformat:2 }} TL
+							</a>
+						</td>
+						<td><span class="badge bg-success">Başarılı</span></td>
+					{% else %}
+						<td class="text-danger">-</td>
+						<td>
+							<span class="badge bg-danger" title="{{ quote.error_message|default:'Hata' }}">
+								{{ quote.error_message|default:"Hata"|truncatechars:30 }}
+							</span>
+						</td>
+					{% endif %}
                     
                     <td>{{ quote.created_at|date:"d M H:i" }}</td>
                     <td>
@@ -107,5 +118,8 @@
             </tbody>
         </table>
     </div>
+    {% else %}
+        <div class="alert alert-info">Henüz teklif kaydı bulunmamaktadır. Lütfen yukarıdaki formu kullanarak yeni bir teklif alın.</div>
+    {% endif %}
 
 {% endblock %}

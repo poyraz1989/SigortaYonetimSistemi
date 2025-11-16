@@ -1,0 +1,111 @@
+{% extends "agent/base_agent.html" %}
+{% load static %}
+{% load humanize %} 
+
+{% block title %}Teklif Detay: {{ quote.company_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ quote.company_name }} Teklif Detayı</h2>
+        <a href="{% url 'agent_quote_list' %}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-arrow-left"></i> Teklif Listesine Geri Dön
+        </a>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">PRIM TUTARI</h5>
+                    <p class="card-text fs-3">
+                        {% if quote.premium_amount %}
+                            {{ quote.premium_amount|floatformat:2|intcomma }} TL
+                        {% else %}
+                            HATA / TEKLİF VERİLEMEDİ
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">TEKLİF BİLGİLERİ</h5>
+                    <p>
+                        <strong>Sigorta Tipi:</strong> {{ quote.get_policy_type_display }}<br>
+                        <strong>Teklif Tarihi:</strong> {{ quote.created_at|date:"d M Y H:i" }}<br>
+                        <strong>Teklifi Alan:</strong> {{ quote.issued_by_agent.username }}
+                    </p>
+                    {% if quote.error_message %}
+                        <div class="alert alert-warning p-2 mt-2">
+                            <strong>Hata Mesajı:</strong> {{ quote.error_message }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if quote.customer %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <i class="fas fa-user-circle"></i> Müşteri Bilgileri: 
+            <strong>{{ quote.customer.name }}</strong>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>TCKN:</strong> {{ quote.customer.tckn|default:"Yok" }}</p>
+                    <p><strong>Doğum Tarihi:</strong> {{ quote.customer.date_of_birth|date:"d M Y"|default:"Yok" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Telefon:</strong> {{ quote.customer.phone|default:"Yok" }}</p>
+                    <p><strong>E-posta:</strong> {{ quote.customer.email|default:"Yok" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <i class="fas fa-shield-alt"></i> Teklif Kapsam Detayları
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                (Bu alanlar, API'den gelen gerçek kapsam detaylarını simüle etmektedir.)
+            </p>
+            
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Kapsam</th>
+                        <th>Limit / Teminat</th>
+                        <th>Muafiyet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in policy_details %}
+                    <tr>
+                        <td>{{ detail.kapsam }}</td>
+                        <td>{{ detail.limit }}</td>
+                        <td>{{ detail.muafiyet }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+    </div>
+    
+    <div class="mt-4 text-center">
+        <button class="btn btn-lg btn-success">
+            <i class="fas fa-check-circle"></i> POLİÇEYİ KES (Simülasyon)
+        </button>
+    </div>
+
+</div>
+{% endblock content %}

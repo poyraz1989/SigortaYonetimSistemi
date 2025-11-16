@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'policy_management',
     'import_export',
 ]
@@ -131,7 +132,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # <-- YENİ EKLEME
 
 STATICFILES_DIRS = [
     # Projenin root seviyesinde ekleyebileceğiniz statik dosyaları işaret eder
-    # os.path.join(BASE_DIR, 'static'), 
+    os.path.join(BASE_DIR, 'static'), 
 ]
 
 
